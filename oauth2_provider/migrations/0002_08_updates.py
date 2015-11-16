@@ -8,6 +8,13 @@ import oauth2_provider.generators
 from django.conf import settings
 
 
+class ConditionallyAddField(migrations.AddField):
+
+    def database_forwards(self, app_label, schema_editor, from_state, to_state):
+        if getattr(settings, 'ADD_SKIP_AUTHORIZATION_FIELD', True):
+            super(ConditionallyAddField, self).database_forwards(app_label, schema_editor, from_state, to_state)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,7 +22,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        ConditionallyAddField(
              model_name='Application',
              name='skip_authorization',
              field=models.BooleanField(default=False),
